@@ -153,7 +153,7 @@ export default function MovieDetailView() {
       </div>
 
       {/* Info Details (Bottom) */}
-      <div className="flex flex-col gap-6 bg-[#0a0505] p-6 md:p-8 border border-white/5">
+      <div className="flex flex-col gap-6 bg-surface-container-low p-6 md:p-8 border border-white/5">
         <div className="flex flex-col gap-4">
           {/* Title and Rating Info */}
           <div>
@@ -230,7 +230,7 @@ export default function MovieDetailView() {
                 to={`/movie/${simMovie.id}`}
                 className="group cursor-pointer flex flex-col relative"
               >
-                <div className="aspect-[2/3] bg-[#0d0707] rounded-sm mb-3 border border-white/5 overflow-hidden transition-all duration-300 group-hover:scale-105 group-hover:border-white group-hover:shadow-[0_0_12px_rgba(255,255,255,0.25)] shadow-md">
+                <div className="aspect-[2/3] bg-surface-container-low rounded-sm mb-3 border border-white/5 overflow-hidden transition-all duration-300 group-hover:scale-105 group-hover:border-white group-hover:shadow-[0_0_12px_rgba(255,255,255,0.25)] shadow-md">
                   <img
                     referrerPolicy="no-referrer"
                     src={simMovie.img}

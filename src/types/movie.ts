@@ -15,4 +15,6 @@ export interface Movie {
   "3and4"?: boolean; // trending or special grouping
   location?: string; // e.g., "all"
   top10?: number; // e.g. 1 to 10
+  timestamp?: any;
 }
+

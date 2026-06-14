@@ -139,7 +139,7 @@ export default function MovieCarouselShelf({
         {/* Left Overlay Arrow (Disney+ Style) */}
         <button
           onClick={() => handleScroll("left")}
-          className={`hidden md:flex absolute md:-left-12 top-[calc(50%-36px)] -translate-y-1/2 w-10 h-10 items-center justify-center z-20 bg-black/60 hover:bg-red-600 hover:scale-110 active:scale-95 text-white border border-white/10 opacity-0 transition-all duration-300 backdrop-blur-sm cursor-pointer rounded-full shadow-lg ${canScrollLeft
+          className={`hidden md:flex absolute md:-left-12 top-[calc(50%-36px)] -translate-y-1/2 w-10 h-10 items-center justify-center z-30 bg-black/60 hover:bg-red-600 hover:scale-110 active:scale-95 text-white border border-white/10 opacity-0 transition-all duration-300 backdrop-blur-sm cursor-pointer rounded-full shadow-lg ${canScrollLeft
             ? "group-hover/shelf:opacity-100 pointer-events-auto"
             : "pointer-events-none"
             }`}
@@ -159,27 +159,22 @@ export default function MovieCarouselShelf({
               key={movie.id}
               id={`${shelfId}-card-${movie.id}`}
               onClick={() => onSelectMovie(movie)}
-              className={`snap-start shrink-0 group cursor-pointer ${sizeClass} relative`}
+              className={`snap-start shrink-0 group cursor-pointer ${sizeClass} relative z-10 hover:z-20`}
             >
               {/* Giant Background Number for Top 10 */}
               {isTop10 && (
-                <div
-                  className="absolute left-[-15px] bottom-12 text-[110px] sm:text-[140px] md:text-[180px] lg:text-[210px] select-none z-0 italic"
-                  style={{
-                    WebkitTextStroke: "2.5px rgba(255, 255, 255, 0.35)",
-                    color: "transparent",
-                    fontFamily: "'Outfit', 'Impact', 'Arial Black', sans-serif",
-                    fontWeight: 900,
-                    lineHeight: "0.8"
-                  }}
-                >
+                <div className={`absolute bottom-12 text-[110px] sm:text-[140px] md:text-[180px] lg:text-[210px] select-none z-20 italic font-black transition-all duration-500 ease-out rank-number-text group-hover:text-primary ${
+                  index === 9
+                    ? "left-[10px] sm:left-[15px] md:left-[20px] lg:left-[25px]"
+                    : "left-[0px] sm:left-[5px] md:left-[8px] lg:left-[10px]"
+                }`}>
                   {index + 1}
                 </div>
               )}
 
               {/* Poster image & text wrapper */}
               <div className={isTop10 ? "ml-auto w-[65%] relative z-10" : "w-full"}>
-                <div className="aspect-[2/3] bg-[#0d0707] rounded-sm mb-4 border border-white/5 overflow-hidden transition-all duration-300 group-hover:scale-105 group-hover:border-white group-hover:shadow-[0_0_12px_rgba(255,255,255,0.25)] shadow-md">
+                <div className="aspect-[2/3] bg-surface-container-low rounded-sm mb-4 border border-white/5 overflow-hidden transition-all duration-300 group-hover:scale-105 group-hover:border-white group-hover:shadow-[0_0_12px_rgba(255,255,255,0.25)] shadow-md">
                   <img
                     referrerPolicy="no-referrer"
                     src={movie.img}
@@ -205,7 +200,7 @@ export default function MovieCarouselShelf({
               to={`/genre/${encodeURIComponent(genreName || "")}`}
               className={`snap-start shrink-0 group cursor-pointer flex flex-col ${sizeClass}`}
             >
-              <div className="aspect-[2/3] bg-[#0d0707]/30 hover:bg-red-950/20 rounded-sm mb-4 border border-white/10 group-hover:border-white group-hover:shadow-[0_0_12px_rgba(255,255,255,0.25)] flex flex-col items-center justify-center transition-all duration-300 group-hover:scale-105 shadow-md gap-2">
+              <div className="aspect-[2/3] bg-surface-container-low/30 hover:bg-red-950/20 rounded-sm mb-4 border border-white/10 group-hover:border-white group-hover:shadow-[0_0_12px_rgba(255,255,255,0.25)] flex flex-col items-center justify-center transition-all duration-300 group-hover:scale-105 shadow-md gap-2">
                 <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/50 group-hover:text-white group-hover:border-white transition-colors">
                   →
                 </div>
@@ -226,7 +221,7 @@ export default function MovieCarouselShelf({
         {/* Right Overlay Arrow (Disney+ Style) */}
         <button
           onClick={() => handleScroll("right")}
-          className={`hidden md:flex absolute md:-right-12 top-[calc(50%-36px)] -translate-y-1/2 w-10 h-10 items-center justify-center z-20 bg-black/60 hover:bg-red-600 hover:scale-110 active:scale-95 text-white border border-white/10 opacity-0 transition-all duration-300 backdrop-blur-sm cursor-pointer rounded-full shadow-lg ${canScrollRight
+          className={`hidden md:flex absolute md:-right-12 top-[calc(50%-36px)] -translate-y-1/2 w-10 h-10 items-center justify-center z-30 bg-black/60 hover:bg-red-600 hover:scale-110 active:scale-95 text-white border border-white/10 opacity-0 transition-all duration-300 backdrop-blur-sm cursor-pointer rounded-full shadow-lg ${canScrollRight
             ? "group-hover/shelf:opacity-100 pointer-events-auto"
             : "pointer-events-none"
             }`}

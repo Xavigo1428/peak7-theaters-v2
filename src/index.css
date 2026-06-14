@@ -8,25 +8,25 @@
 
   --color-primary-container: #dc2626;
   --color-on-primary-container: #ffffff;
-  
-  --color-surface: #0a0505;
-  --color-surface-dim: #020101;
-  --color-surface-bright: #191111;
-  
-  --color-surface-container-lowest: #040202;
-  --color-surface-container-low: #0d0707;
-  --color-surface-container: #120909;
-  --color-surface-container-high: #1b1111;
-  --color-surface-container-highest: #281b1b;
-  
-  --color-on-surface: #f5f5f5;
-  --color-on-surface-variant: #c5bcbc;
-  
-  --color-outline: #857474;
-  --color-outline-variant: #443434;
-  
+
+  --color-surface: #121214;
+  --color-surface-dim: #0a0a0c;
+  --color-surface-bright: #1c1d21;
+
+  --color-surface-container-lowest: #050506;
+  --color-surface-container-low: #0f1012;
+  --color-surface-container: #16171a;
+  --color-surface-container-high: #202226;
+  --color-surface-container-highest: #2b2d31;
+
+  --color-on-surface: #f5f5f7;
+  --color-on-surface-variant: #c5c7cc;
+
+  --color-outline: #7c7e85;
+  --color-outline-variant: #3a3b40;
+
   --color-primary: #ef4444;
-  
+
   --color-secondary: #ffffff;
   --color-on-secondary: #dc2626;
   --color-secondary-container: #dc2626;
@@ -34,7 +34,8 @@
 
 /* Custom global styles overrides for cinematic theme */
 body {
-  background-color: #0a0505;
+  background: radial-gradient(circle at center, #32353b 0%, #000000 100%);
+  background-attachment: fixed;
   color: #f5f5f5;
   font-family: var(--font-sans);
 }
@@ -43,6 +44,7 @@ body {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -52,4 +54,28 @@ body {
   background: rgba(18, 18, 18, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+}
+
+/* Premium Top 10 Hover Effects */
+.rank-number-text {
+  font-family: 'Outfit', 'Impact', 'Arial Black', sans-serif;
+  line-height: 0.8;
+  background: linear-gradient(to bottom, #8e9198 0%, #32353b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  -webkit-text-stroke: 2.5px rgba(255, 255, 255, 0.35);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.group:hover .rank-number-text {
+  background: linear-gradient(to bottom, #ff0000 0%, #4a0000 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  -webkit-text-stroke: 2.5px #ff0000;
+  filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.8));
+  transform: scale(1.05) translate(-4px, -4px);
 }

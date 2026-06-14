@@ -7,9 +7,16 @@ import Footer from "./components/Footer";
 import MovieDetailView from "./components/MovieDetailView";
 import AdminLogin from "./components/AdminLogin";
 import AdminDashboardView from "./components/AdminDashboardView";
+import AdminLibraryView from "./components/AdminLibraryView";
+import AdminAddMovieView from "./components/AdminAddMovieView";
 import GenreView from "./components/GenreView";
 import MovieCarouselShelf from "./components/MovieCarouselShelf";
 import ScheduleView from "./components/ScheduleView";
+import ReservationView from "./components/ReservationView";
+import LocationsView from "./components/LocationsView";
+import TermsView from "./components/TermsView";
+import SupportView from "./components/SupportView";
+import PrivacyView from "./components/PrivacyView";
 import { Play, Info, Flame, Sparkles, ChevronLeft, ChevronRight, Compass, Film, AlertTriangle } from "lucide-react";
 
 // Firebase integrations
@@ -117,7 +124,7 @@ function AppContent() {
       await setDoc(doc(db, "movies", docId), movieData);
     } catch (error) {
       console.error("Error adding movie:", error);
-      alert("Error adding movie to Firestore: " + error);
+      throw error;
     }
   };
 
@@ -128,7 +135,7 @@ function AppContent() {
       await setDoc(doc(db, "movies", id), movieData);
     } catch (error) {
       console.error("Error editing movie:", error);
-      alert("Error editing movie in Firestore: " + error);
+      throw error;
     }
   };
 
@@ -168,7 +175,7 @@ function AppContent() {
     : [];
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-on-surface">
+    <div className="flex flex-col min-h-screen bg-transparent text-on-surface">
       {/* Navigation Head */}
       <Header
         isAuthenticated={isAuthenticated}
@@ -212,24 +219,85 @@ function AppContent() {
             element={<ScheduleView />}
           />
 
+          {/* Dedicated Reservation Info Page Route */}
+          <Route
+            path="/reservation"
+            element={<ReservationView />}
+          />
+
+          {/* Footer Pages */}
+          <Route
+            path="/locations"
+            element={<LocationsView />}
+          />
+          <Route
+            path="/terms"
+            element={<TermsView />}
+          />
+          <Route
+            path="/support"
+            element={<SupportView />}
+          />
+          <Route
+            path="/privacy"
+            element={<PrivacyView />}
+          />
+
           {/* Admin Management Area */}
           <Route
             path="/admin"
             element={
               isAuthenticated ? (
                 <div className="max-w-7xl mx-auto px-4 md:px-16 py-8">
-                  <AdminDashboardView
-                    movies={allMovies}
-                    onAddMovie={handleAddMovie}
-                    onEditMovie={handleEditMovie}
-                    onDeleteMovie={handleDeleteMovie}
-                    onResetDatabase={handleResetDatabase}
-                  />
+                  <AdminDashboardView />
                 </div>
               ) : (
                 <div className="max-w-7xl mx-auto px-4 md:px-16 py-8 flex items-center justify-center min-h-[60vh]">
                   <AdminLogin onLoginSuccess={handleLogin} />
                 </div>
+              )
+            }
+          />
+          <Route
+            path="/admin/library"
+            element={
+              isAuthenticated ? (
+                <div className="max-w-7xl mx-auto px-4 md:px-16 py-8">
+                  <AdminLibraryView
+                    onDeleteMovie={handleDeleteMovie}
+                    onResetDatabase={handleResetDatabase}
+                  />
+                </div>
+              ) : (
+                <Navigate to="/admin" replace />
+              )
+            }
+          />
+          <Route
+            path="/admin/add-movie"
+            element={
+              isAuthenticated ? (
+                <div className="max-w-7xl mx-auto px-4 md:px-16 py-8">
+                  <AdminAddMovieView
+                    onAddMovie={handleAddMovie}
+                  />
+                </div>
+              ) : (
+                <Navigate to="/admin" replace />
+              )
+            }
+          />
+          <Route
+            path="/admin/edit-movie/:id"
+            element={
+              isAuthenticated ? (
+                <div className="max-w-7xl mx-auto px-4 md:px-16 py-8">
+                  <AdminAddMovieView
+                    onEditMovie={handleEditMovie}
+                  />
+                </div>
+              ) : (
+                <Navigate to="/admin" replace />
               )
             }
           />
@@ -240,7 +308,7 @@ function AppContent() {
       </main>
 
       {/* Aesthetic Feet */}
-      <Footer />
+      <Footer isAuthenticated={isAuthenticated} onLogout={handleLogout} />
     </div>
   );
 }
@@ -271,7 +339,7 @@ function GuestCatalogView({
   const startTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      setCurrentSlideIndex((prevIndex) => 
+      setCurrentSlideIndex((prevIndex) =>
         top10Movies.length > 0 ? (prevIndex + 1) % top10Movies.length : 0
       );
     }, 6000);
@@ -334,7 +402,7 @@ function GuestCatalogView({
               <div
                 key={movie.id}
                 onClick={() => onSelectMovie(movie)}
-                className="group relative rounded-sm overflow-hidden aspect-[2/3] cursor-pointer bg-[#0d0707] border border-white/5 transition-all duration-300 hover:scale-105 hover:border-white hover:shadow-[0_0_12px_rgba(255,255,255,0.25)] active:scale-98 shadow-md"
+                className="group relative rounded-sm overflow-hidden aspect-[2/3] cursor-pointer bg-surface-container-low border border-white/5 transition-all duration-300 hover:scale-105 hover:border-white hover:shadow-[0_0_12px_rgba(255,255,255,0.25)] active:scale-98 shadow-md"
               >
                 <img
                   referrerPolicy="no-referrer"
@@ -372,12 +440,7 @@ function GuestCatalogView({
         <div className="w-1.5 h-1.5 bg-white/10 rounded-full"></div>
       </div>
 
-      {/* Dynamic Version Stamp Decor */}
-      <div className="fixed right-6 bottom-6 p-2 z-40 pointer-events-none hidden lg:block">
-        <div className="text-[9px] uppercase tracking-widest text-white/20 font-mono">
-          v.0.95-beta // peak7-stitch
-        </div>
-      </div>
+
 
       {/* 1. Cinematic Featured Hero Section (STARZ-Inspired Slider) */}
       {top10Movies.length > 0 && (
@@ -390,9 +453,8 @@ function GuestCatalogView({
             {top10Movies.map((movie, idx) => (
               <div
                 key={movie.id}
-                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                  idx === currentSlideIndex ? "opacity-100 animate-fade-in" : "opacity-0 pointer-events-none"
-                }`}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentSlideIndex ? "opacity-100 animate-fade-in" : "opacity-0 pointer-events-none"
+                  }`}
               >
                 <img
                   referrerPolicy="no-referrer"
@@ -401,8 +463,9 @@ function GuestCatalogView({
                   className="w-full h-full object-cover"
                 />
                 {/* Soft Shadow Overlays with beautiful crimson-black tones */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0505] via-[#0a0505]/75 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0a0505] via-[#0a0505]/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/2 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black via-black/10 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-l from-black via-black/10 to-transparent" />
               </div>
             ))}
           </div>
@@ -431,11 +494,10 @@ function GuestCatalogView({
               <button
                 key={idx}
                 onClick={() => handleDotClick(idx)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                  idx === currentSlideIndex
-                    ? "bg-red-600 w-6"
-                    : "bg-white/40 hover:bg-white/70"
-                }`}
+                className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${idx === currentSlideIndex
+                  ? "bg-red-600 w-6"
+                  : "bg-white/40 hover:bg-white/70"
+                  }`}
                 title={`Go to Slide ${idx + 1}`}
               />
             ))}
@@ -446,9 +508,8 @@ function GuestCatalogView({
             {top10Movies.map((movie, idx) => (
               <div
                 key={movie.id}
-                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                  idx === currentSlideIndex ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-                }`}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentSlideIndex ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                  }`}
               >
                 {/* Left Side Details */}
                 <div className="absolute left-6 md:left-12 bottom-16 md:bottom-20 flex flex-col gap-4 max-w-3xl">
@@ -512,10 +573,10 @@ function GuestCatalogView({
       {/* Main Shelves Grid Container */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-6 md:py-12 flex flex-col gap-6 md:gap-10 overflow-hidden">
         <MovieCarouselShelf genreName="Top Rated" title="Top Rated" onSelectMovie={onSelectMovie} isLarge={true} />
+        <MovieCarouselShelf title="Top 10 Movies in Grand Lodge on Peak 7 Today" onSelectMovie={onSelectMovie} isTop10={true} />
         <MovieCarouselShelf genreName="Adventure" title="Adventure" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Action" title="Action" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Comedy" title="Comedy" onSelectMovie={onSelectMovie} />
-        <MovieCarouselShelf title="Top 10 Movies in Grand Lodge on Peak 7 Today" onSelectMovie={onSelectMovie} isTop10={true} />
         <MovieCarouselShelf genreName="Romance" title="Romance" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Drama" title="Drama" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Trending Now" title="Trending Now" onSelectMovie={onSelectMovie} isLarge={true} />

@@ -1,6 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Search, LogIn, LogOut, Menu, X, Film } from "lucide-react";
+import { Search, LogOut, Menu, X, Film } from "lucide-react";
+
+const GENRES = [
+  "Action",
+  "Adventure",
+  "Children",
+  "Comedy",
+  "Crime",
+  "Documentary",
+  "Drama",
+  "Family",
+  "Fantasy",
+  "Holiday",
+  "Horror",
+  "Musical",
+  "Mystery",
+  "Romance",
+  "Sci-Fi",
+  "Thriller",
+  "War",
+  "Western"
+];
 
 interface HeaderProps {
   isAuthenticated: boolean;
@@ -13,6 +34,22 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  const [isGenresOpen, setIsGenresOpen] = useState(false);
+  const [isMobileGenresOpen, setIsMobileGenresOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsGenresOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +103,51 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
           >
             Schedule
           </NavLink>
+          <NavLink 
+            to="/reservation" 
+            id="nav-reservation"
+            className={({ isActive }) => 
+              `text-[11px] font-black tracking-[0.25em] uppercase transition-all duration-300 pb-1 border-b-2 ${
+                isActive 
+                  ? "text-white border-red-600" 
+                  : "text-white/60 border-transparent hover:text-red-500 hover:border-red-500/35"
+              }`
+            }
+          >
+            Reservation
+          </NavLink>
+          <div ref={dropdownRef} className="relative">
+            <button 
+              onClick={() => setIsGenresOpen(!isGenresOpen)}
+              className={`text-[11px] font-black tracking-[0.25em] uppercase transition-all duration-300 pb-1 border-b-2 flex items-center gap-1 cursor-pointer focus:outline-none ${
+                isGenresOpen 
+                  ? "text-white border-red-600" 
+                  : "text-white/60 border-transparent hover:text-red-500 hover:border-red-500/35"
+              }`}
+            >
+              <span>Genres</span>
+              <span className="text-[7px] transition-transform duration-300" style={{ transform: isGenresOpen ? "rotate(180deg)" : "rotate(0deg)" }}>
+                ▼
+              </span>
+            </button>
+
+            {isGenresOpen && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-surface-container-high/95 border border-white/10 backdrop-blur-xl shadow-2xl p-6 w-[480px] z-50 animate-fade-in rounded-sm">
+                <div className="grid grid-cols-3 gap-y-3 gap-x-6 text-[10px] font-bold tracking-widest font-mono uppercase text-white/70">
+                  {GENRES.map((g) => (
+                    <Link
+                      key={g}
+                      to={`/genre/${encodeURIComponent(g)}`}
+                      onClick={() => setIsGenresOpen(false)}
+                      className="hover:text-red-500 transition-colors py-1 block"
+                    >
+                      {g}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Trailing Action */}
@@ -106,8 +188,8 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
             )}
           </div>
 
-          {/* Admin / Login Button */}
-          {isAuthenticated ? (
+          {/* Admin / Logout Button */}
+          {isAuthenticated && (
             <button 
               id="logout-btn"
               onClick={() => {
@@ -119,22 +201,13 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
               <LogOut className="w-3 h-3" />
               <span className="hidden sm:inline">Logout</span>
             </button>
-          ) : (
-            <button 
-              id="signin-btn"
-              onClick={() => navigate("/admin")}
-              className="text-[10px] font-black tracking-widest uppercase border border-white/20 bg-transparent hover:border-red-600 hover:bg-white hover:text-black text-white px-4 py-1.5 rounded-full transition-all flex items-center gap-1.5"
-            >
-              <LogIn className="w-3 h-3" />
-              <span>Admin Login</span>
-            </button>
           )}
 
           {/* Mobile Menu Icon */}
-          <button
+           <button
             id="mobile-menu-btn"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden w-9 h-9 flex items-center justify-center rounded-none border border-white/10 bg-[#0d0707] text-white"
+            className="md:hidden w-9 h-9 flex items-center justify-center rounded-none border border-white/10 bg-surface-container-low text-white"
           >
             {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
@@ -143,7 +216,7 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-[#0d0707]/95 border-b border-white/5 px-6 py-4 flex flex-col gap-4 animate-fade-in font-mono text-[10px]">
+        <div className="md:hidden bg-surface-container-low/95 border-b border-white/5 px-6 py-4 flex flex-col gap-4 animate-fade-in font-mono text-[10px]">
           <NavLink 
             to="/" 
             onClick={() => setIsMobileMenuOpen(false)}
@@ -159,13 +232,48 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
             to="/schedule" 
             onClick={() => setIsMobileMenuOpen(false)}
             className={({ isActive }) => 
-              `font-black tracking-widest uppercase py-2 ${
+              `font-black tracking-widest uppercase py-2 border-b border-white/5 ${
                 isActive ? "text-red-500" : "text-white/60"
               }`
             }
           >
             Schedule
           </NavLink>
+          <NavLink 
+            to="/reservation" 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={({ isActive }) => 
+              `font-black tracking-widest uppercase py-2 border-b border-white/5 ${
+                isActive ? "text-red-500" : "text-white/60"
+              }`
+            }
+          >
+            Reservation
+          </NavLink>
+          <button
+            onClick={() => setIsMobileGenresOpen(!isMobileGenresOpen)}
+            className="font-black tracking-widest uppercase py-2 text-white/60 hover:text-red-500 transition-colors flex justify-between items-center w-full"
+          >
+            <span>Genres</span>
+            <span className="font-sans text-xs">{isMobileGenresOpen ? "−" : "+"}</span>
+          </button>
+          {isMobileGenresOpen && (
+            <div className="grid grid-cols-2 gap-2 pl-4 py-2 animate-fade-in">
+              {GENRES.map((g) => (
+                <Link
+                  key={g}
+                  to={`/genre/${encodeURIComponent(g)}`}
+                  onClick={() => {
+                    setIsMobileGenresOpen(false);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="py-1.5 text-white/50 hover:text-red-500 transition-colors font-mono text-[9px] uppercase tracking-wider block"
+                >
+                  {g}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </header>

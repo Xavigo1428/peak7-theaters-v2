@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Lock, Mail, Film, ArrowRight, ShieldCheck } from "lucide-react";
+import { Lock, Mail, Film, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
@@ -12,6 +12,7 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,27 +39,11 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
     }
   };
 
-  const executeAutoLogin = async () => {
-    const defaultEmail = "admin@peak7theaters.com";
-    const defaultPassword = "password123";
-    setEmail(defaultEmail);
-    setPassword(defaultPassword);
-    setIsLoading(true);
-    setErrorMsg("");
 
-    try {
-      await signInWithEmailAndPassword(auth, defaultEmail, defaultPassword);
-      onLoginSuccess();
-    } catch (error: any) {
-      console.error("Firebase Quick Pass error:", error);
-      setErrorMsg("Quick Pass falló. Asegúrate de que el usuario admin@peak7theaters.com con clave password123 esté creado en Firebase Auth.");
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="w-full max-w-md mx-auto my-12 md:my-20">
-      <div 
+      <div
         id="login-form-container"
         className="bg-surface-container-low border border-outline-variant/30 rounded-2xl p-8 md:p-10 shadow-[0_15px_35px_rgba(0,0,0,0.5)] flex flex-col gap-6"
       >
@@ -115,13 +100,25 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
               </span>
               <input
                 id="login-password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-surface-container border border-outline-variant/40 rounded-lg py-2.5 pl-11 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary-container focus:border-primary-container text-on-surface"
+                className="w-full bg-surface-container border border-outline-variant/40 rounded-lg py-2.5 pl-11 pr-11 text-sm focus:outline-none focus:ring-1 focus:ring-primary-container focus:border-primary-container text-on-surface"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-white transition-colors focus:outline-none cursor-pointer"
+                title={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
             </div>
           </div>
 
@@ -131,36 +128,10 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
             disabled={isLoading}
             className="w-full bg-primary-container text-on-primary-container py-3 rounded-lg text-sm font-bold tracking-wide hover:shadow-[0_0_15px_rgba(229,9,20,0.4)] hover:bg-red-700 active:scale-98 transition-all duration-300 flex items-center justify-center gap-2 mt-2"
           >
-            {isLoading ? "Validating security..." : "Acknowledge Sign In"}
+            {isLoading ? "Validating security..." : "Sign In"}
             {!isLoading && <ArrowRight className="w-4 h-4" />}
           </button>
         </form>
-
-        <div className="relative flex py-1 items-center">
-          <div className="flex-grow border-t border-outline-variant/20"></div>
-          <span className="flex-shrink mx-4 text-on-surface-variant text-[10px] uppercase font-bold tracking-widest">
-            Speed Evaluation
-          </span>
-          <div className="flex-grow border-t border-outline-variant/20"></div>
-        </div>
-
-        {/* Evaluator Quick Bypass */}
-        <button
-          id="quick-bypass-btn"
-          type="button"
-          onClick={executeAutoLogin}
-          className="w-full bg-surface-container hover:bg-surface-container-high text-secondary border border-secondary/35 font-semibold text-xs py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 shadow-sm"
-        >
-          <ShieldCheck className="w-4 h-4 shrink-0" />
-          <span>Quick Pass (Click to sign in instantly)</span>
-        </button>
-
-        {/* Help footer hint */}
-        <div className="text-center">
-          <span className="text-[10px] text-on-surface-variant font-mono">
-            Demo Credentials: admin@peak7theaters.com / password123
-          </span>
-        </div>
       </div>
     </div>
   );

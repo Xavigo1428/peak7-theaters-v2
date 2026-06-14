@@ -45,12 +45,12 @@ export default function GenreView({ onSelectMovie }: GenreViewProps) {
     <div className="max-w-7xl mx-auto px-6 md:px-12 py-12 animate-fade-in min-h-[70vh]">
       {/* Back to Catalog Breadcrumb */}
       <div className="mb-6">
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-red-500 transition-colors"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
-          <span>Back to Catalog</span>
+          <span>Back</span>
         </Link>
       </div>
 
@@ -84,15 +84,15 @@ export default function GenreView({ onSelectMovie }: GenreViewProps) {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {movies.map((movie) => (
-            <div 
+            <div
               key={movie.id}
               onClick={() => onSelectMovie(movie)}
-              className="group relative rounded-sm overflow-hidden aspect-[2/3] cursor-pointer bg-[#0d0707] border border-white/5 transition-all duration-300 hover:scale-105 hover:border-white hover:shadow-[0_0_12px_rgba(255,255,255,0.25)] active:scale-98 shadow-md"
+              className="group relative rounded-sm overflow-hidden aspect-[2/3] cursor-pointer bg-surface-container-low border border-white/5 transition-all duration-300 hover:scale-105 hover:border-white hover:shadow-[0_0_12px_rgba(255,255,255,0.25)] active:scale-98 shadow-md"
             >
-              <img 
+              <img
                 referrerPolicy="no-referrer"
-                src={movie.img} 
-                alt={movie.name} 
+                src={movie.img}
+                alt={movie.name}
                 className="w-full h-full object-cover transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent group-hover:via-black/50 transition-all duration-300" />
