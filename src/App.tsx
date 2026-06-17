@@ -9,9 +9,9 @@ import AdminLogin from "./components/AdminLogin";
 import AdminDashboardView from "./components/AdminDashboardView";
 import AdminLibraryView from "./components/AdminLibraryView";
 import AdminAddMovieView from "./components/AdminAddMovieView";
+import ManageTop10 from "./components/ManageTop10";
 import GenreView from "./components/GenreView";
 import MovieCarouselShelf from "./components/MovieCarouselShelf";
-import ScheduleView from "./components/ScheduleView";
 import ReservationView from "./components/ReservationView";
 import LocationsView from "./components/LocationsView";
 import TermsView from "./components/TermsView";
@@ -213,10 +213,10 @@ function AppContent() {
             }
           />
 
-          {/* Dedicated Movie Theater Schedule Page Route */}
+          {/* Dedicated Movie Theater Schedule Page Route (Redirected to Reservation) */}
           <Route
             path="/schedule"
-            element={<ScheduleView />}
+            element={<Navigate to="/reservation" replace />}
           />
 
           {/* Dedicated Reservation Info Page Route */}
@@ -267,6 +267,18 @@ function AppContent() {
                     onDeleteMovie={handleDeleteMovie}
                     onResetDatabase={handleResetDatabase}
                   />
+                </div>
+              ) : (
+                <Navigate to="/admin" replace />
+              )
+            }
+          />
+          <Route
+            path="/admin/manage-top-10"
+            element={
+              isAuthenticated ? (
+                <div className="max-w-7xl mx-auto px-4 md:px-16 py-8">
+                  <ManageTop10 />
                 </div>
               ) : (
                 <Navigate to="/admin" replace />
@@ -335,13 +347,27 @@ function GuestCatalogView({
 }: GuestCatalogViewProps) {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const timerRef = useRef<any>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const currentIndexRef = useRef(0);
+  currentIndexRef.current = currentSlideIndex;
+
+  const scrollToSlide = (index: number) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        left: index * scrollRef.current.clientWidth,
+        behavior: "smooth"
+      });
+      setCurrentSlideIndex(index);
+    }
+  };
 
   const startTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      setCurrentSlideIndex((prevIndex) =>
-        top10Movies.length > 0 ? (prevIndex + 1) % top10Movies.length : 0
-      );
+      if (top10Movies.length > 0) {
+        const nextIndex = (currentIndexRef.current + 1) % top10Movies.length;
+        scrollToSlide(nextIndex);
+      }
     }, 6000);
   };
 
@@ -354,20 +380,45 @@ function GuestCatalogView({
     };
   }, [top10Movies]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollLeft = currentIndexRef.current * scrollRef.current.clientWidth;
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      if (clientWidth > 0) {
+        const index = Math.round(scrollLeft / clientWidth);
+        if (index !== currentIndexRef.current && index >= 0 && index < top10Movies.length) {
+          setCurrentSlideIndex(index);
+          startTimer();
+        }
+      }
+    }
+  };
+
   const handleNextSlide = () => {
     if (top10Movies.length === 0) return;
-    setCurrentSlideIndex((prev) => (prev + 1) % top10Movies.length);
+    const nextIndex = (currentSlideIndex + 1) % top10Movies.length;
+    scrollToSlide(nextIndex);
     startTimer();
   };
 
   const handlePrevSlide = () => {
     if (top10Movies.length === 0) return;
-    setCurrentSlideIndex((prev) => (prev - 1 + top10Movies.length) % top10Movies.length);
+    const prevIndex = (currentSlideIndex - 1 + top10Movies.length) % top10Movies.length;
+    scrollToSlide(prevIndex);
     startTimer();
   };
 
   const handleDotClick = (index: number) => {
-    setCurrentSlideIndex(index);
+    scrollToSlide(index);
     startTimer();
   };
 
@@ -448,24 +499,79 @@ function GuestCatalogView({
           id="featured-hero"
           className="relative w-full h-[76vh] min-h-[500px] md:h-[82vh] flex items-end max-w-7xl mx-auto overflow-hidden rounded-none md:rounded-sm md:mt-4 border border-white/5 shadow-2xl group/hero"
         >
-          {/* Backdrop Images with cross-fade */}
-          <div className="absolute inset-0 z-0">
+          {/* Scroll Container */}
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="flex w-full h-full overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth"
+          >
             {top10Movies.map((movie, idx) => (
               <div
                 key={movie.id}
-                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentSlideIndex ? "opacity-100 animate-fade-in" : "opacity-0 pointer-events-none"
-                  }`}
+                className="w-full h-full shrink-0 snap-start snap-always relative flex items-end"
               >
-                <img
-                  referrerPolicy="no-referrer"
-                  src={movie.img}
-                  alt={movie.name}
-                  className="w-full h-full object-cover"
-                />
-                {/* Soft Shadow Overlays with beautiful crimson-black tones */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/2 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black via-black/10 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-l from-black via-black/10 to-transparent" />
+                {/* Backdrop Image */}
+                <div className="absolute inset-0 z-0">
+                  <img
+                    referrerPolicy="no-referrer"
+                    src={movie.img}
+                    alt={movie.name}
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Soft Shadow Overlays with beautiful crimson-black tones */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black via-black/5 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-l from-black via-black/5 to-transparent" />
+                </div>
+
+                {/* Content Details (inside the slide so they slide together) */}
+                <div className="relative z-10 w-full h-full flex items-end p-6 md:p-12 pb-16 md:pb-20 pointer-events-none">
+                  {/* Left Side Details */}
+                  <div className="flex flex-col gap-4 max-w-3xl pointer-events-auto">
+                    <div className="flex items-center gap-3 mb-1 flex-wrap">
+                      <span className="px-2 py-0.5 bg-red-600 text-[10px] font-black uppercase tracking-tighter italic text-white">
+                        Top 10 Rank #{idx + 1}
+                      </span>
+                      <span className="text-xs font-bold tracking-[0.2em] uppercase text-white/70">
+                        ★ {movie.rating} score • {movie.type}
+                      </span>
+                    </div>
+
+                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-black leading-[0.85] tracking-tighter uppercase mb-4 drop-shadow-2xl italic font-display text-white">
+                      {movie.name}
+                    </h1>
+
+                    <p className="text-sm md:text-base leading-relaxed text-white/80 max-w-lg mb-4 line-clamp-3 md:line-clamp-none">
+                      {movie.synopsis}
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-4 mt-2">
+                      <button
+                        onClick={() => onSelectMovie(movie)}
+                        className="px-8 py-3.5 bg-white text-black font-black uppercase tracking-widest text-xs flex items-center gap-2 hover:bg-red-600 hover:text-white transition-all cursor-pointer rounded-none hover:scale-105"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                        <span>Play Trailer</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Metadata Rail (Right Aligned Details) */}
+                  <div className="hidden lg:flex flex-col gap-6 items-end absolute right-12 bottom-20 z-10 font-sans pointer-events-none text-right">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-widest text-white/50 mb-1">Director</div>
+                      <div className="text-xs font-black uppercase tracking-wide text-white">{movie.director}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-widest text-white/50 mb-1">Lead Actor</div>
+                      <div className="text-xs font-black uppercase tracking-wide text-white">{movie.leadActor}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-widest text-white/50 mb-1">Genre</div>
+                      <div className="text-xs font-bold uppercase tracking-wide text-red-500 font-mono">{movie.genre.join(" • ")}</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -500,71 +606,6 @@ function GuestCatalogView({
                   }`}
                 title={`Go to Slide ${idx + 1}`}
               />
-            ))}
-          </div>
-
-          {/* Content Details Overlay with cross-fade */}
-          <div className="relative z-10 w-full h-full pointer-events-none">
-            {top10Movies.map((movie, idx) => (
-              <div
-                key={movie.id}
-                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentSlideIndex ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-                  }`}
-              >
-                {/* Left Side Details */}
-                <div className="absolute left-6 md:left-12 bottom-16 md:bottom-20 flex flex-col gap-4 max-w-3xl">
-                  <div className="flex items-center gap-3 mb-1 flex-wrap">
-                    <span className="px-2 py-0.5 bg-red-600 text-[10px] font-black uppercase tracking-tighter italic text-white">
-                      Top 10 Rank #{idx + 1}
-                    </span>
-                    <span className="text-xs font-bold tracking-[0.2em] uppercase text-white/70">
-                      ★ {movie.rating} score • {movie.type}
-                    </span>
-                  </div>
-
-                  <h1 className="text-4xl sm:text-6xl md:text-8xl font-black leading-[0.85] tracking-tighter uppercase mb-4 drop-shadow-2xl italic font-display text-white">
-                    {movie.name}
-                  </h1>
-
-                  <p className="text-sm md:text-base leading-relaxed text-white/80 max-w-lg mb-4 line-clamp-3 md:line-clamp-none">
-                    {movie.synopsis}
-                  </p>
-
-                  <div className="flex flex-wrap items-center gap-4 mt-2">
-                    <button
-                      onClick={() => onSelectMovie(movie)}
-                      className="px-8 py-3.5 bg-white text-black font-black uppercase tracking-widest text-xs flex items-center gap-2 hover:bg-red-600 hover:text-white transition-all cursor-pointer rounded-none hover:scale-105"
-                    >
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>Play Trailer</span>
-                    </button>
-
-                    <button
-                      onClick={() => onSelectMovie(movie)}
-                      className="px-8 py-3.5 bg-white/10 backdrop-blur-md text-white font-bold uppercase tracking-widest text-xs hover:bg-white/20 transition-all cursor-pointer rounded-none hover:scale-105 border border-white/10"
-                    >
-                      <Info className="w-3.5 h-3.5" />
-                      <span>Details</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Metadata Rail (Right Aligned Details) */}
-                <div className="hidden lg:flex flex-col gap-6 items-end absolute right-12 bottom-20 z-10 font-sans pointer-events-none text-right">
-                  <div>
-                    <div className="text-[10px] uppercase tracking-widest text-white/50 mb-1">Director</div>
-                    <div className="text-xs font-black uppercase tracking-wide text-white">{movie.director}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] uppercase tracking-widest text-white/50 mb-1">Lead Actor</div>
-                    <div className="text-xs font-black uppercase tracking-wide text-white">{movie.leadActor}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] uppercase tracking-widest text-white/50 mb-1">Genre</div>
-                    <div className="text-xs font-bold uppercase tracking-wide text-red-500 font-mono">{movie.genre.join(" • ")}</div>
-                  </div>
-                </div>
-              </div>
             ))}
           </div>
         </section>

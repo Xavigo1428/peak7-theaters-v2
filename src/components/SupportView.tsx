@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { ChevronLeft, HelpCircle } from "lucide-react";
 
 export default function SupportView() {
+  const navigate = useNavigate();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -17,13 +19,13 @@ export default function SupportView() {
     >
       {/* Back Button */}
       <div className="w-full text-left">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-red-500 transition-colors cursor-pointer"
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-red-500 transition-colors cursor-pointer bg-transparent border-none p-0 focus:outline-none"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
           <span>Back</span>
-        </Link>
+        </button>
       </div>
 
       {/* Header */}

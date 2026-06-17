@@ -16,8 +16,7 @@ export const INITIAL_MOVIES: Movie[] = [
     img: "https://lh3.googleusercontent.com/aida-public/AB6AXuD9mIqRgJh10KzzNC5gMxJUyd4fytQK03HUsY9PtyLm5GjJbLndRdoVUXsRRUsxDBI9DnPbVWMKetCHt4l4FFhJ7UzYhRc9II-dCwNMLsCDsGX8vz7Oxz-TPW7mA40xD3bqP1Kdb8kWdLOgjtxpdsh6yZJCHz3t33ZulAb8P-JfQISAREvPxk3ZQVn_S-y_ua6te0ADurkFJ62mBO4lcpkacCn20gSSA7Xc-JHB5jced4RS6y59siaPqcWIf3B15aJZS9TJ93luNy9M",
     "1and2": true, // Featured
     "3and4": false,
-    location: "all",
-    top10: 1
+    location: "all"
   },
   {
     id: "neon-horizon",
@@ -34,8 +33,7 @@ export const INITIAL_MOVIES: Movie[] = [
     img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAEHwPL9EgzyaN54hJgqtfGUF3jHOV2pkHMmY3sZ3Zs9OxZIwQv1Rqd_6wF6_CH4eDwjytMWEE8bcupOIk8uCE12KRtEYeqVkklGhzD32PWPYfnI3bUvKfaV5EdKviKs-AOvdug7f1i9osOpc0L1i6bmFekX7sAfy9ww1wBBeAv-KgElWsq3vSD6kgqz9_1DGxVlpS6M8l4ki5pGYRLJpDfw_5rykgD9D1QLdaZEKtk2U2mTrvvlH1GLUIbPOM2ALzgBMxujNrDfgDn",
     "1and2": false,
     "3and4": true, // Trending
-    location: "all",
-    top10: 2
+    location: "all"
   },
   {
     id: "cyber-rain",
@@ -52,8 +50,7 @@ export const INITIAL_MOVIES: Movie[] = [
     img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC2wvURR3FIPjho15KNMc96tqlYv9xp-F0T8TvTVRGCyUcxrECPyda9UfjM4Noe2ox88aAD2gx2yB60A1LMSJ8aLlboJ1SdnuykVEYQNcQp4h3cNhkn5qGEc1YWMTtfg5SK9XlOn2JVAp5OCRC4YmdY_5SIHDwhoGqUsZevxXrDhBgGLBIWMms52MbMBHaBRvtbZdToXNYkRsMw_pU8xMtu3-8bjg0MzvPD37Rlyj5LWc5PBme0yhpNGSNl173EgdEq2wn85LBGtnlM",
     "1and2": false,
     "3and4": true, // Trending
-    location: "all",
-    top10: 3
+    location: "all"
   },
   {
     id: "directors-cut",
@@ -70,8 +67,7 @@ export const INITIAL_MOVIES: Movie[] = [
     img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBuwL4Fjwi0qMxqhscucSJn5eyAbH7vaf4s9UF2tmRMqcl3nyCw19weUoUNZstH9GIz4khgN1olS_Fq1FYmRDtV5gbKV9AgsspCffQwVxCSxh8sBWAzL0cT1Ef5eu5zAQmWM8mDQgEBnYfukxJKAKFjJYCWbQchbQrQO6qNoZ1yxVYiVtA8b90qOWe6x2QO1CPBlBxXosiHupNlyiQdBMT47dN9g4VhSgp94DhMDuj9KDk_QxCbKPid4LLIZdVaCVp6SIoP6G4-Djt",
     "1and2": false,
     "3and4": true, // Trending
-    location: "all",
-    top10: 4
+    location: "all"
   },
   {
     id: "submersion",
@@ -88,8 +84,7 @@ export const INITIAL_MOVIES: Movie[] = [
     img: "https://lh3.googleusercontent.com/aida-public/AB6AXuD5cBTB1wCMeifuYRzuqtXXfbf-DfEQCsaur-ar9IMNBA9EmEMKyQWrrvsCpbruf9oHmP-STCyO0K4KnCf3YeNVCuAD6NfOmG3SHF14WHzKW7haOXc9qIrVMM8nJIOGg7VVgOhqZQI0jmkB-DTMft7DylfsxX7ThXb9WpfFV7omIyvgiOxknOdMEowG00KlGG2DipScFOoTW7PYaKzKhowbfIo6XUlEDb4zlXIeDSeGWzO9hGJYga5OZ2lyxtg2tSGgoJdOmoWTwXBi",
     "1and2": false,
     "3and4": true, // Trending
-    location: "all",
-    top10: 5
+    location: "all"
   },
   {
     id: "apex-drift",
@@ -106,8 +101,7 @@ export const INITIAL_MOVIES: Movie[] = [
     img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAUqGxzZbsIEXHXbRIe6eKOz5ECyQt6qjYS3hDNx-ljH20Ya3cSFpGdEuP7GnvEw6woEi02C8ZlwNaKM80EfOb08_lCquK5NuK0xPN8PECV0GhQWpDhfBvNbhv2VCZAGyVInSx_hZk9_F-IjoiqwzG2X4hKmU7S38PgLQmQhrEBSCmGd_pvdDsPHdm_FLyNFLfgbkH2vor-CiXuazqPSwbI2plci6lNT8P0SF0W61TGVEfafJAld-qJTilkJY8FDFShCNaZX1ihT1B4",
     "1and2": false,
     "3and4": true, // Trending
-    location: "all",
-    top10: 6
+    location: "all"
   },
   {
     id: "code-black",
@@ -124,8 +118,7 @@ export const INITIAL_MOVIES: Movie[] = [
     img: "https://lh3.googleusercontent.com/aida-public/AB6AXuADhbJPR1xfeOC-E-wGddgsl2IonOLK3tJSJJE5gAVpPY4PQE75aRPAOafZV_gTDl0Xmst1J5IMCSAPxYLMBHuOrYsH8YnHjQ7zeOIGqsE6C0CKbWTo4O_V1sfXxBPmW9mYayAf1wCiy6Eh-VDxX04LzOJHZ86nmolBTvxijdlPaMqwupkkYv4FKvYBNfLxwS97tb5PzFnKIlG0MCtUm7M2Af-hwd8GQ_pD98aHd6q38MwPbA3ZuiJGdigCbWYkgPpC-l8MP7ah0Rxz",
     "1and2": false,
     "3and4": false,
-    location: "all",
-    top10: 7
+    location: "all"
   },
   {
     id: "neon-vengeance",
@@ -142,8 +135,7 @@ export const INITIAL_MOVIES: Movie[] = [
     img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAY7JWp5UQq9VvKzGGnjTmy4t6iDCvDUY8X1hrbSOuMLnd8S0uHRjZ5L-aHgjnbZtBDWaz0dSKg_u-QP7C3dAvZ6wdmq3hGbvpx7cGBdhuhv5WMq3PCZ9WfYhD4JAcD3oAetXCFOaLRNG13eU6JIzxPJMdd3hKkVa_SIvvo2MeoxZE1-2i59Gpz-X2hlqRFOvQIKGz_8EzREj8THcGkO2p_7q0PfiSeaILy06PDKPUaBbfx4WVAHVgcOz20OOP85LCSSX4c1LMd3jdg",
     "1and2": false,
     "3and4": false,
-    location: "all",
-    top10: 8
+    location: "all"
   },
   {
     id: "mach-5",
@@ -160,7 +152,6 @@ export const INITIAL_MOVIES: Movie[] = [
     img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDcTubEmXNxdiM-wO6I4drAy40wymngzCoKexUQs9S0JszkoM0cr0SynhZlEfU0IGJqD-VGoKwFlxh-wuZccVq_-9UxXuM7uSQpHYaKFKb7-yUx8IIp148Bh3oxEl4rMRhfQSrXmPghlo_QLQkzOynQY5zmDLTqErNV71VMRg_xnP49qlPCVl0V9k5YR6442iNNpO8FENYT3RLslbemC03QxVLFDtYNZSphPuUtT80kbK_u2u_RHtjPAekYJsvDm2rIOLDBvuUq-xwR",
     "1and2": false,
     "3and4": false,
-    location: "all",
-    top10: 9
+    location: "all"
   }
 ];

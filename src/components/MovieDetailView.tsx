@@ -65,7 +65,7 @@ export default function MovieDetailView() {
   }, [movie]);
 
   // Helper to extract YouTube video ID and return embed link
-  const getYouTubeEmbedUrl = (url: string) => {
+  const getYouTubeEmbedUrl = (url: string, isMobileDevice: boolean) => {
     if (!url) return "";
     let videoId = "";
     try {
@@ -79,7 +79,13 @@ export default function MovieDetailView() {
     } catch (e) {
       console.error("Error parsing youtube URL", e);
     }
-    return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1` : url;
+    if (!videoId) return url;
+    
+    if (isMobileDevice) {
+      return `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1&mute=1&playsinline=1`;
+    } else {
+      return `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1&mute=0`;
+    }
   };
 
   if (isLoading) {
@@ -109,7 +115,9 @@ export default function MovieDetailView() {
     );
   }
 
-  const embedUrl = getYouTubeEmbedUrl(movie.trailer);
+  // Detect mobile users based on window inner width
+  const isMobile = typeof window !== "undefined" ? window.innerWidth < 768 : false;
+  const embedUrl = getYouTubeEmbedUrl(movie.trailer, isMobile);
 
   return (
     <motion.div

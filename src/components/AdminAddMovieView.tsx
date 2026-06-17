@@ -18,6 +18,45 @@ const capitalizeTitle = (title: string) => {
     .join(" ");
 };
 
+const compressImage = (base64Str: string, maxWidth = 800, maxHeight = 1200): Promise<string> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = base64Str;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.75);
+        resolve(compressedBase64);
+      } else {
+        resolve(base64Str);
+      }
+    };
+    img.onerror = () => {
+      resolve(base64Str);
+    };
+  });
+};
+
 interface AdminAddMovieViewProps {
   onAddMovie?: (movie: Movie) => Promise<void> | void;
   onEditMovie?: (movie: Movie) => Promise<void> | void;
@@ -66,6 +105,7 @@ export default function AdminAddMovieView({
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [top10Val, setTop10Val] = useState<number | null | undefined>(undefined);
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
     type: "success" | "error";
@@ -85,6 +125,7 @@ export default function AdminAddMovieView({
         (docSnap) => {
           if (docSnap.exists()) {
             const movieToEdit = { id: docSnap.id, ...docSnap.data() } as Movie;
+            setTop10Val(movieToEdit.top10);
             let tsDate = new Date();
             if (movieToEdit.timestamp) {
               if (typeof movieToEdit.timestamp.toDate === "function") {
@@ -123,15 +164,17 @@ export default function AdminAddMovieView({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 1024 * 1024) {
-      alert("Image must be less than 1MB");
+    if (file.size > 4 * 1024 * 1024) {
+      alert("Image must be less than 4MB");
       return;
     }
 
     const reader = new FileReader();
     reader.onloadend = () => {
       if (typeof reader.result === "string") {
-        setFormData((prev) => ({ ...prev, img: reader.result as string }));
+        compressImage(reader.result).then((compressed) => {
+          setFormData((prev) => ({ ...prev, img: compressed }));
+        });
       }
     };
     reader.readAsDataURL(file);
@@ -308,6 +351,10 @@ export default function AdminAddMovieView({
       location: "all",
       timestamp: new Date(formData.timestamp)
     };
+
+    if (top10Val !== undefined) {
+      submissionMovie.top10 = top10Val;
+    }
 
     try {
       if (isEditMode && onEditMovie) {
@@ -648,7 +695,7 @@ export default function AdminAddMovieView({
             {/* Image Upload */}
             <div className="flex flex-col gap-1.5 w-full items-start">
               <span className="text-xs text-white/60 font-semibold tracking-wide uppercase font-display text-left">
-                Image <span className="text-red-500 font-bold ml-0.5">*</span> <span className="text-yellow-500/80 font-normal lowercase italic">(Less than 1MB)</span>
+                Image <span className="text-red-500 font-bold ml-0.5">*</span> <span className="text-yellow-500/80 font-normal lowercase italic">(Less than 4MB)</span>
               </span>
               <div className="flex items-center gap-4 w-full">
                 <input

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Search, LogOut, Menu, X, Film } from "lucide-react";
 
 const GENRES = [
@@ -34,6 +34,7 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [isGenresOpen, setIsGenresOpen] = useState(false);
   const [isMobileGenresOpen, setIsMobileGenresOpen] = useState(false);
@@ -51,20 +52,35 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
     };
   }, []);
 
+  useEffect(() => {
+    // If the path changes and is not home, close the search bar and clear the query
+    if (location.pathname !== "/") {
+      setIsSearchOpen(false);
+      setSearchQuery("");
+      onSearch("");
+    }
+  }, [location.pathname]);
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(searchQuery);
+    if (searchQuery && location.pathname !== "/") {
+      navigate("/");
+    }
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setSearchQuery(val);
     onSearch(val);
+    if (val && location.pathname !== "/") {
+      navigate("/");
+    }
   };
 
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-b from-black/95 to-black/75 backdrop-blur-xl border-b border-white/5 shadow-lg transition-all duration-300">
-      <div className="flex justify-between items-center w-full px-6 md:px-12 py-5 max-w-7xl mx-auto">
+      <div className="relative flex justify-between items-center w-full px-6 md:px-12 py-5 max-w-7xl mx-auto">
         {/* Brand */}
         <Link 
           to="/" 
@@ -76,7 +92,7 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
         </Link>
 
         {/* Navigation Links (Desktop) */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-6">
           <NavLink 
             to="/" 
             id="nav-home"
@@ -89,19 +105,6 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
             }
           >
             Home
-          </NavLink>
-          <NavLink 
-            to="/schedule" 
-            id="nav-schedule"
-            className={({ isActive }) => 
-              `text-[11px] font-black tracking-[0.25em] uppercase transition-all duration-300 pb-1 border-b-2 ${
-                isActive 
-                  ? "text-white border-red-600" 
-                  : "text-white/60 border-transparent hover:text-red-500 hover:border-red-500/35"
-              }`
-            }
-          >
-            Schedule
           </NavLink>
           <NavLink 
             to="/reservation" 
@@ -153,7 +156,7 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
         {/* Trailing Action */}
         <div className="flex items-center gap-4">
           {/* Detailed Search Trigger */}
-          <div className="relative flex items-center">
+          <div className="relative flex items-center h-9">
             {isSearchOpen ? (
               <form onSubmit={handleSearchSubmit} className="flex items-center animate-fade-in">
                 <input
@@ -161,7 +164,7 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
                   placeholder="Search movies..."
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="bg-black/95 border border-white/10 px-3 py-1.5 text-xs focus:outline-none focus:border-red-600 text-white w-40 md:w-56 uppercase tracking-wider rounded-none font-mono"
+                  className="bg-black/95 border border-white/10 px-3 h-9 text-base md:text-xs focus:outline-none focus:border-red-600 text-white w-40 md:w-56 uppercase tracking-wider rounded-none font-mono"
                   autoFocus
                 />
                 <button 
@@ -171,7 +174,7 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
                     setSearchQuery("");
                     onSearch("");
                   }}
-                  className="bg-black/95 border-y border-r border-white/10 px-3 py-1.5 text-white hover:text-red-600 rounded-none"
+                  className="bg-black/95 border-y border-r border-white/10 px-3 h-9 text-white hover:text-red-600 rounded-none flex items-center justify-center"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -227,17 +230,6 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
             }
           >
             Home
-          </NavLink>
-          <NavLink 
-            to="/schedule" 
-            onClick={() => setIsMobileMenuOpen(false)}
-            className={({ isActive }) => 
-              `font-black tracking-widest uppercase py-2 border-b border-white/5 ${
-                isActive ? "text-red-500" : "text-white/60"
-              }`
-            }
-          >
-            Schedule
           </NavLink>
           <NavLink 
             to="/reservation" 
