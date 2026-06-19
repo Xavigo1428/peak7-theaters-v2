@@ -519,9 +519,9 @@ function GuestCatalogView({
                     className="w-full h-full object-cover"
                   />
                   {/* Soft Shadow Overlays with beautiful crimson-black tones */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black via-black/5 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-l from-black via-black/5 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/1 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black via-black/3 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-l from-black via-black/3 to-transparent" />
                 </div>
 
                 {/* Content Details (inside the slide so they slide together) */}
@@ -614,7 +614,7 @@ function GuestCatalogView({
       {/* Main Shelves Grid Container */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-6 md:py-12 flex flex-col gap-6 md:gap-10 overflow-hidden">
         <MovieCarouselShelf genreName="Top Rated" title="Top Rated" onSelectMovie={onSelectMovie} isLarge={true} />
-        <MovieCarouselShelf title="Top 10 Movies in Grand Lodge on Peak 7 Today" onSelectMovie={onSelectMovie} isTop10={true} />
+        <MovieCarouselShelf title="GRAND LODGE TOP 10 TODAY" onSelectMovie={onSelectMovie} isTop10={true} />
         <MovieCarouselShelf genreName="Adventure" title="Adventure" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Action" title="Action" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Comedy" title="Comedy" onSelectMovie={onSelectMovie} />

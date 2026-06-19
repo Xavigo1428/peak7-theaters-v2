@@ -80,7 +80,7 @@ export default function MovieDetailView() {
       console.error("Error parsing youtube URL", e);
     }
     if (!videoId) return url;
-    
+
     if (isMobileDevice) {
       return `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1&mute=1&playsinline=1`;
     } else {
@@ -150,6 +150,7 @@ export default function MovieDetailView() {
               title={`${movie.name} Trailer`}
               className="absolute inset-0 w-full h-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"
               allowFullScreen
             />
           ) : (
@@ -169,7 +170,7 @@ export default function MovieDetailView() {
               {movie.genre.map((g, idx) => (
                 <span
                   key={g + idx}
-                  className="text-[9px] font-mono font-black uppercase tracking-widest text-[#ef4444] border border-[#ef4444]/30 px-2.5 py-0.5 rounded-none bg-red-600/5"
+                  className="text-[10px] font-mono font-black uppercase tracking-widest text-[#ef4444] border border-[#ef4444]/30 px-2.5 py-0.5 rounded-none bg-red-600/5"
                 >
                   {g}
                 </span>
@@ -181,43 +182,40 @@ export default function MovieDetailView() {
           </div>
 
           {/* Specs Line */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] font-mono uppercase tracking-widest text-white/50">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-base sm:text-[15x] font-mono uppercase tracking-widest text-white/50">
             <span className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-red-600" />
+              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
               {movie.year}
             </span>
             <span className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-red-600" />
-              {movie.duration.includes("h") ? movie.duration : `${movie.duration} min`}
+              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
+              {formatDuration(movie.duration)}
             </span>
-            <span className="flex items-center gap-1.5">
-              <Star className="w-3.5 h-3.5 text-red-500 fill-current" />
-              <span>{movie.rating} rating</span>
-            </span>
-            <span className="bg-black/95 backdrop-blur-md text-red-500 font-mono text-[9px] font-black px-2 py-0.5 rounded-none border border-white/5 tracking-widest uppercase">
+
+            <span className="bg-black/95 backdrop-blur-md text-red-500 font-mono text-[16px] sm:text-base font-black px-2 py-0.5 rounded-none border border-white/5 tracking-widest uppercase">
               {movie.type}
             </span>
-            <span className="bg-red-600 text-white text-[9px] font-black px-2.5 py-1 rounded-none uppercase tracking-widest">
+            <span className="bg-red-600 text-white text-[16px] sm:text-base font-black px-2.5 py-1 rounded-none uppercase tracking-widest">
               {movie.rating}
             </span>
           </div>
 
           {/* Narrative of movie */}
-          <p className="text-sm text-white/80 font-sans leading-relaxed">
+          <p className="text-base text-white/80 font-sans leading-relaxed">
             {movie.synopsis || "No description provided."}
           </p>
 
           {/* Personnel */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 text-xs font-mono border-t border-white/5 text-white/60">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 text-base font-mono border-t border-white/5 text-white/60">
             <div className="flex items-center gap-2">
               <Film className="w-3.5 h-3.5 text-red-600 shrink-0" />
               <span className="font-bold text-white uppercase shrink-0">Director:</span>
-              <span className="truncate uppercase text-[10px] tracking-wide">{movie.director}</span>
+              <span className="truncate uppercase text-[16px] tracking-wide">{movie.director}</span>
             </div>
             <div className="flex items-center gap-2">
               <User className="w-3.5 h-3.5 text-red-600 shrink-0" />
               <span className="font-bold text-white uppercase shrink-0">Lead:</span>
-              <span className="truncate uppercase text-[10px] tracking-wide">{movie.leadActor}</span>
+              <span className="truncate uppercase text-[16px] tracking-wide">{movie.leadActor}</span>
             </div>
           </div>
         </div>
@@ -270,4 +268,28 @@ function shuffleArray<T>(array: T[]): T[] {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
+}
+
+// Helper to format duration to Xh Ym format
+function formatDuration(duration: string | number | undefined): string {
+  if (!duration) return "";
+  const durStr = String(duration).toLowerCase();
+
+  if (/^\d+h\s*\d+m$/.test(durStr.trim())) {
+    return durStr;
+  }
+
+  const minutesMatch = durStr.match(/\d+/);
+  if (!minutesMatch) return String(duration);
+
+  const totalMinutes = parseInt(minutesMatch[0], 10);
+  if (isNaN(totalMinutes)) return String(duration);
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+  return `${minutes}m`;
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
-import { Search, LogOut, Menu, X, Film } from "lucide-react";
+import { Search, LogOut, Menu, X, Film, LayoutDashboard } from "lucide-react";
 
 const GENRES = [
   "Action",
@@ -80,53 +80,50 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
 
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-b from-black/95 to-black/75 backdrop-blur-xl border-b border-white/5 shadow-lg transition-all duration-300">
-      <div className="relative flex justify-between items-center w-full px-6 md:px-12 py-5 max-w-7xl mx-auto">
+      <div className="relative flex justify-between items-center w-full px-4 sm:px-6 md:px-12 py-4 md:py-5 max-w-7xl mx-auto">
         {/* Brand */}
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           id="brand-logo"
-          className="flex items-center gap-2 text-2xl font-black font-display text-red-600 uppercase italic tracking-tighter"
+          className="flex items-center gap-1.5 sm:gap-2 text-xl sm:text-2xl font-black font-display text-red-600 uppercase italic tracking-tighter shrink-0"
         >
-          <Film className="w-5 h-5 text-red-600" />
-          <span>Peak7 Theaters.</span>
+          <Film className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-red-600 shrink-0" />
+          <span className={isSearchOpen ? "hidden sm:inline" : "inline"}>Peak7 Theaters.</span>
         </Link>
 
         {/* Navigation Links (Desktop) */}
         <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-6">
-          <NavLink 
-            to="/" 
+          <NavLink
+            to="/"
             id="nav-home"
-            className={({ isActive }) => 
-              `text-[11px] font-black tracking-[0.25em] uppercase transition-all duration-300 pb-1 border-b-2 ${
-                isActive 
-                  ? "text-white border-red-600" 
-                  : "text-white/60 border-transparent hover:text-red-500 hover:border-red-500/35"
+            className={({ isActive }) =>
+              `text-[11px] font-black tracking-[0.25em] uppercase transition-all duration-300 pb-1 border-b-2 ${isActive
+                ? "text-white border-red-600"
+                : "text-white/60 border-transparent hover:text-red-500 hover:border-red-500/35"
               }`
             }
           >
             Home
           </NavLink>
-          <NavLink 
-            to="/reservation" 
+          <NavLink
+            to="/reservation"
             id="nav-reservation"
-            className={({ isActive }) => 
-              `text-[11px] font-black tracking-[0.25em] uppercase transition-all duration-300 pb-1 border-b-2 ${
-                isActive 
-                  ? "text-white border-red-600" 
-                  : "text-white/60 border-transparent hover:text-red-500 hover:border-red-500/35"
+            className={({ isActive }) =>
+              `text-[11px] font-black tracking-[0.25em] uppercase transition-all duration-300 pb-1 border-b-2 ${isActive
+                ? "text-white border-red-600"
+                : "text-white/60 border-transparent hover:text-red-500 hover:border-red-500/35"
               }`
             }
           >
             Reservation
           </NavLink>
           <div ref={dropdownRef} className="relative">
-            <button 
+            <button
               onClick={() => setIsGenresOpen(!isGenresOpen)}
-              className={`text-[11px] font-black tracking-[0.25em] uppercase transition-all duration-300 pb-1 border-b-2 flex items-center gap-1 cursor-pointer focus:outline-none ${
-                isGenresOpen 
-                  ? "text-white border-red-600" 
+              className={`text-[11px] font-black tracking-[0.25em] uppercase transition-all duration-300 pb-1 border-b-2 flex items-center gap-1 cursor-pointer focus:outline-none ${isGenresOpen
+                  ? "text-white border-red-600"
                   : "text-white/60 border-transparent hover:text-red-500 hover:border-red-500/35"
-              }`}
+                }`}
             >
               <span>Genres</span>
               <span className="text-[7px] transition-transform duration-300" style={{ transform: isGenresOpen ? "rotate(180deg)" : "rotate(0deg)" }}>
@@ -154,7 +151,7 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
         </nav>
 
         {/* Trailing Action */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           {/* Detailed Search Trigger */}
           <div className="relative flex items-center h-9">
             {isSearchOpen ? (
@@ -164,10 +161,10 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
                   placeholder="Search movies..."
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="bg-black/95 border border-white/10 px-3 h-9 text-base md:text-xs focus:outline-none focus:border-red-600 text-white w-40 md:w-56 uppercase tracking-wider rounded-none font-mono"
+                  className="bg-black/95 border border-white/10 px-3 h-9 text-base md:text-xs focus:outline-none focus:border-red-600 text-white w-32 sm:w-40 md:w-56 uppercase tracking-wider rounded-none font-mono"
                   autoFocus
                 />
-                <button 
+                <button
                   type="button"
                   onClick={() => {
                     setIsSearchOpen(false);
@@ -180,7 +177,7 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
                 </button>
               </form>
             ) : (
-              <button 
+              <button
                 id="search-btn"
                 onClick={() => setIsSearchOpen(true)}
                 className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-white/5 transition-colors text-white/60 hover:text-white"
@@ -193,55 +190,77 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
 
           {/* Admin / Logout Button */}
           {isAuthenticated && (
-            <button 
-              id="logout-btn"
-              onClick={() => {
-                onLogout();
-                navigate("/");
-              }}
-              className="text-[10px] font-black tracking-widest uppercase border border-red-600 bg-transparent text-red-500 hover:bg-red-600 hover:text-white px-4 py-1.5 rounded-full transition-all flex items-center gap-1.5"
-            >
-              <LogOut className="w-3 h-3" />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Link
+                to="/admin"
+                id="nav-admin-dashboard"
+                className="w-9 h-9 md:w-auto md:h-auto flex items-center justify-center rounded-full border border-white/20 bg-transparent text-white/80 hover:border-white hover:text-white md:px-4 md:py-1.5 transition-all gap-1.5 cursor-pointer shrink-0"
+                title="Dashboard"
+              >
+                <LayoutDashboard className="w-4 h-4 md:w-3 md:h-3" />
+                <span className="hidden md:inline text-[11px] font-black tracking-widest uppercase">Dashboard</span>
+              </Link>
+              <button
+                id="logout-btn"
+                onClick={() => {
+                  onLogout();
+                  navigate("/");
+                }}
+                className="w-9 h-9 md:w-auto md:h-auto flex items-center justify-center rounded-full border border-red-600 bg-transparent text-red-500 hover:bg-red-600 hover:text-white md:px-4 md:py-1.5 transition-all gap-1.5 cursor-pointer shrink-0"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4 md:w-3 md:h-3" />
+                <span className="hidden md:inline text-[11px] font-black tracking-widest uppercase">Logout</span>
+              </button>
+            </div>
           )}
 
           {/* Mobile Menu Icon */}
-           <button
+          <button
             id="mobile-menu-btn"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden w-9 h-9 flex items-center justify-center rounded-none border border-white/10 bg-surface-container-low text-white"
+            className="md:hidden w-9 h-9 flex items-center justify-center rounded-full border border-white/10 bg-surface-container-low text-white/80 hover:text-white transition-all hover:bg-white/5"
           >
-            {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            {isMobileMenuOpen ? <X className="w-[18px] h-[18px]" /> : <Menu className="w-[18px] h-[18px]" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-surface-container-low/95 border-b border-white/5 px-6 py-4 flex flex-col gap-4 animate-fade-in font-mono text-[10px]">
-          <NavLink 
-            to="/" 
+        <div className="md:hidden bg-surface-container-low/95 border-b border-white/5 px-6 py-4 flex flex-col gap-4 animate-fade-in font-mono text-[12px] sm:text-xs">
+          <NavLink
+            to="/"
             onClick={() => setIsMobileMenuOpen(false)}
-            className={({ isActive }) => 
-              `font-black tracking-widest uppercase py-2 border-b border-white/5 ${
-                isActive ? "text-red-500" : "text-white/60"
+            className={({ isActive }) =>
+              `font-black tracking-widest uppercase py-2 border-b border-white/5 ${isActive ? "text-red-500" : "text-white/60"
               }`
             }
           >
             Home
           </NavLink>
-          <NavLink 
-            to="/reservation" 
+          <NavLink
+            to="/reservation"
             onClick={() => setIsMobileMenuOpen(false)}
-            className={({ isActive }) => 
-              `font-black tracking-widest uppercase py-2 border-b border-white/5 ${
-                isActive ? "text-red-500" : "text-white/60"
+            className={({ isActive }) =>
+              `font-black tracking-widest uppercase py-2 border-b border-white/5 ${isActive ? "text-red-500" : "text-white/60"
               }`
             }
           >
             Reservation
           </NavLink>
+          {isAuthenticated && (
+            <NavLink
+              to="/admin"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={({ isActive }) =>
+                `font-black tracking-widest uppercase py-2 border-b border-white/5 ${isActive ? "text-red-500" : "text-white/60"
+                }`
+              }
+            >
+              Dashboard
+            </NavLink>
+          )}
           <button
             onClick={() => setIsMobileGenresOpen(!isMobileGenresOpen)}
             className="font-black tracking-widest uppercase py-2 text-white/60 hover:text-red-500 transition-colors flex justify-between items-center w-full"
@@ -259,7 +278,7 @@ export default function Header({ isAuthenticated, onLogout, onSearch }: HeaderPr
                     setIsMobileGenresOpen(false);
                     setIsMobileMenuOpen(false);
                   }}
-                  className="py-1.5 text-white/50 hover:text-red-500 transition-colors font-mono text-[9px] uppercase tracking-wider block"
+                  className="py-1.5 text-white/50 hover:text-red-500 transition-colors font-mono text-[11px] uppercase tracking-wider block"
                 >
                   {g}
                 </Link>

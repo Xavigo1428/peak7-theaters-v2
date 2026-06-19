@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Movie } from "../types/movie";
-import { Film, ChevronLeft, ArrowRight } from "lucide-react";
+import { Film, ChevronLeft, ArrowRight, Loader2 } from "lucide-react";
 import { doc, onSnapshot, collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../firebase";
 
 const toLocalDateTimeString = (date: Date) => {
   const tzOffset = date.getTimezoneOffset() * 60000;
@@ -18,44 +19,7 @@ const capitalizeTitle = (title: string) => {
     .join(" ");
 };
 
-const compressImage = (base64Str: string, maxWidth = 800, maxHeight = 1200): Promise<string> => {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.src = base64Str;
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      let width = img.width;
-      let height = img.height;
 
-      if (width > height) {
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
-      } else {
-        if (height > maxHeight) {
-          width = Math.round((width * maxHeight) / height);
-          height = maxHeight;
-        }
-      }
-
-      canvas.width = width;
-      canvas.height = height;
-
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.drawImage(img, 0, 0, width, height);
-        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.75);
-        resolve(compressedBase64);
-      } else {
-        resolve(base64Str);
-      }
-    };
-    img.onerror = () => {
-      resolve(base64Str);
-    };
-  });
-};
 
 interface AdminAddMovieViewProps {
   onAddMovie?: (movie: Movie) => Promise<void> | void;
@@ -105,6 +69,7 @@ export default function AdminAddMovieView({
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
   const [top10Val, setTop10Val] = useState<number | null | undefined>(undefined);
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
@@ -160,7 +125,7 @@ export default function AdminAddMovieView({
     }
   }, [id, isEditMode]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -169,15 +134,36 @@ export default function AdminAddMovieView({
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (typeof reader.result === "string") {
-        compressImage(reader.result).then((compressed) => {
-          setFormData((prev) => ({ ...prev, img: compressed }));
-        });
-      }
-    };
-    reader.readAsDataURL(file);
+    const movieName = formData.name.trim();
+    if (!movieName) {
+      alert("Please enter the movie name/title first, so that the storage filename is descriptive.");
+      e.target.value = "";
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const sanitizedName = movieName
+        .replace(/[^a-zA-Z0-9\s-_]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+      const storagePath = `MoviesList/${Date.now()}-${sanitizedName}.webp`;
+      const storageRef = ref(storage, storagePath);
+
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      setFormData((prev) => ({ ...prev, img: downloadURL }));
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next.img;
+        return next;
+      });
+    } catch (error: any) {
+      console.error("Error uploading image to storage:", error);
+      alert("Failed to upload image: " + (error?.message || error));
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const validateForm = () => {
@@ -697,14 +683,23 @@ export default function AdminAddMovieView({
               <span className="text-xs text-white/60 font-semibold tracking-wide uppercase font-display text-left">
                 Image <span className="text-red-500 font-bold ml-0.5">*</span> <span className="text-yellow-500/80 font-normal lowercase italic">(Less than 4MB)</span>
               </span>
-              <div className="flex items-center gap-4 w-full">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="flex-grow bg-[#1c1d1f] border border-white/10 p-2 text-xs text-white rounded focus:outline-none focus:border-blue-500 cursor-pointer"
-                />
-                {formData.img && (
+              <div className="flex items-center gap-4 w-full font-sans">
+                <div className="relative flex-grow flex items-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    disabled={isUploading}
+                    className="w-full bg-[#1c1d1f] border border-white/10 p-2 text-xs text-white rounded focus:outline-none focus:border-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                  {isUploading && (
+                    <div className="absolute right-3 flex items-center gap-1.5 text-[10px] text-blue-400 font-semibold">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Uploading...</span>
+                    </div>
+                  )}
+                </div>
+                {formData.img && !isUploading && (
                   <div className="relative shrink-0">
                     <img
                       src={formData.img}
@@ -755,10 +750,10 @@ export default function AdminAddMovieView({
             <button
               id="form-save-btn"
               type="submit"
-              disabled={isSaving}
+              disabled={isSaving || isUploading}
               className="px-12 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold tracking-wide rounded uppercase cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSaving ? "Saving..." : "Submit"}
+              {isSaving ? "Saving..." : isUploading ? "Uploading Image..." : "Submit"}
             </button>
           </div>
         </form>
