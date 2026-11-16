@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { HashRouter as Router, Routes, Route, Navigate, Link, useNavigate } from "react-router-dom";
-import { INITIAL_MOVIES } from "./data/mockMovies";
 import { Movie } from "./types/movie";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -12,6 +11,7 @@ import AdminAddMovieView from "./components/AdminAddMovieView";
 import ManageTop10 from "./components/ManageTop10";
 import GenreView from "./components/GenreView";
 import MovieCarouselShelf from "./components/MovieCarouselShelf";
+import PromoBanner from "./components/PromoBanner";
 import ReservationView from "./components/ReservationView";
 import LocationsView from "./components/LocationsView";
 import TermsView from "./components/TermsView";
@@ -22,7 +22,7 @@ import { Play, Info, Flame, Sparkles, ChevronLeft, ChevronRight, Compass, Film, 
 // Firebase integrations
 import { auth, db } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { collection, onSnapshot, doc, setDoc, deleteDoc, getDocs, query, where, limit, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, doc, setDoc, deleteDoc, query, where, limit, orderBy } from "firebase/firestore";
 
 function AppContent() {
   const navigate = useNavigate();
@@ -39,14 +39,7 @@ function AppContent() {
   useEffect(() => {
     const moviesRef = collection(db, "movies");
 
-    // 1. Check if database needs seeding (once on mount)
-    getDocs(query(moviesRef, limit(1))).then((snapshot) => {
-      if (snapshot.empty) {
-        seedDatabase();
-      }
-    });
-
-    // 2. Query Top 10 Movies for Hero Slider
+    // 1. Query Top 10 Movies for Hero Slider
     const qTop10 = query(moviesRef, where("top10", ">", 0), orderBy("top10", "asc"), limit(10));
     const unsubscribeTop10 = onSnapshot(qTop10, (snapshot) => {
       const list: Movie[] = [];
@@ -88,19 +81,6 @@ function AppContent() {
 
     return () => unsubscribe();
   }, [isAuthenticated, searchQuery]);
-
-  // Seeding helper
-  const seedDatabase = async () => {
-    try {
-      const moviesRef = collection(db, "movies");
-      for (const movie of INITIAL_MOVIES) {
-        const { id, ...movieData } = movie;
-        await setDoc(doc(moviesRef, id), movieData);
-      }
-    } catch (error) {
-      console.error("Error seeding database:", error);
-    }
-  };
 
   // Auth helper
   const handleLogin = () => {
@@ -145,23 +125,6 @@ function AppContent() {
     } catch (error) {
       console.error("Error deleting movie:", error);
       alert("Error deleting movie from Firestore: " + error);
-    }
-  };
-
-  const handleResetDatabase = async () => {
-    if (confirm("This will overwrite your Firestore collection and restore the defaults. Proceed?")) {
-      try {
-        const moviesRef = collection(db, "movies");
-        const querySnapshot = await getDocs(moviesRef);
-        for (const docSnap of querySnapshot.docs) {
-          await deleteDoc(docSnap.ref);
-        }
-        await seedDatabase();
-        alert("Database reset successfully!");
-      } catch (error) {
-        console.error("Error resetting database:", error);
-        alert("Error resetting database: " + error);
-      }
     }
   };
 
@@ -265,7 +228,6 @@ function AppContent() {
                 <div className="max-w-7xl mx-auto px-4 md:px-16 py-8">
                   <AdminLibraryView
                     onDeleteMovie={handleDeleteMovie}
-                    onResetDatabase={handleResetDatabase}
                   />
                 </div>
               ) : (
@@ -616,6 +578,7 @@ function GuestCatalogView({
         <MovieCarouselShelf genreName="Top Rated" title="Top Rated" onSelectMovie={onSelectMovie} isLarge={true} />
         <MovieCarouselShelf title="GRAND LODGE TOP 10 TODAY" onSelectMovie={onSelectMovie} isTop10={true} />
         <MovieCarouselShelf genreName="Adventure" title="Adventure" onSelectMovie={onSelectMovie} />
+        <PromoBanner />
         <MovieCarouselShelf genreName="Action" title="Action" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Comedy" title="Comedy" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Romance" title="Romance" onSelectMovie={onSelectMovie} />
@@ -626,10 +589,12 @@ function GuestCatalogView({
         <MovieCarouselShelf genreName="Sci-Fi" title="Sci-Fi" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Fantasy" title="Fantasy" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Holiday" title="Holiday" onSelectMovie={onSelectMovie} />
+        <MovieCarouselShelf genreName="Family" title="Family" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Musical" title="Musical" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Thriller" title="Thriller" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="War" title="War" onSelectMovie={onSelectMovie} />
         <MovieCarouselShelf genreName="Horror" title="Horror" onSelectMovie={onSelectMovie} />
+        <MovieCarouselShelf genreName="Crime" title="Crime" onSelectMovie={onSelectMovie} />
       </div>
     </div>
   );

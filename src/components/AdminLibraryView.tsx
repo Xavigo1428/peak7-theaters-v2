@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Movie } from "../types/movie";
-import { Plus, Edit2, Trash2, Film, RefreshCw, ChevronLeft } from "lucide-react";
+import { Plus, Edit2, Trash2, Film, ChevronLeft } from "lucide-react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
 interface AdminLibraryViewProps {
   onDeleteMovie: (id: string) => void;
-  onResetDatabase: () => void;
 }
 
 export default function AdminLibraryView({
-  onDeleteMovie,
-  onResetDatabase
+  onDeleteMovie
 }: AdminLibraryViewProps) {
   const [movies, setMovies] = useState<Movie[]>([]);
   // Search filter
@@ -68,16 +66,6 @@ export default function AdminLibraryView({
 
         {/* Action button groupings */}
         <div className="flex gap-3">
-          <button
-            id="reset-preset-btn"
-            onClick={onResetDatabase}
-            className="text-xs font-semibold bg-surface-container-low hover:bg-surface-container-high border border-white/5 text-white px-4 py-2.5 rounded-lg flex items-center gap-1.5 transition-all duration-300 cursor-pointer"
-            title="Restore Default Mock Movies"
-          >
-            <RefreshCw className="w-4 h-4 text-white/70" />
-            <span>Reset Defaults</span>
-          </button>
-          
           <Link
             to="/admin/add-movie"
             id="add-movie-btn"
